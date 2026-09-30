@@ -4,27 +4,31 @@ let framesBetweenParticles = 15;
 let nextParticleFrame = 0;
 let previousParticlePosition;
 let particleFadeFrames = 150;
+let nextImageIndex = 0;
 
-// Array to store your images
 let particleImages = [];
 
-// Use the exact filenames from your Sketch Files panel
+const assetFolder = "assets/";
+const assetVersion = "20250930";
+
 let imageFiles = [
-  "blob_red.png",
-  "burst.png",
-  "circle_blue.png",   // replace with exact name in sidebar
-  "diamond.png",
-  "flower.png",
-  "hexagon.png",
-  "squiggle.png",
-  "star_shape.png",    // replace with exact name in sidebar
-  "triangle_green.png",// replace with exact name in sidebar
-  "weirdshape01.png"   // replace with exact name in sidebar
+  "1.png",
+  "2.png",
+  "3.png",
+  "4.png",
+  "5.png",
+  "6.png",
+  "7.png",
+  "8.png",
+  "9.png",
+  "10.png",
 ];
 
 function preload() {
   for (let file of imageFiles) {
-    particleImages.push(loadImage(file)); // no "assets/" needed in Web Editor
+    particleImages.push(
+      loadImage(`${assetFolder}${file}?v=${assetVersion}`)
+    );
   }
 }
 
@@ -80,8 +84,9 @@ class Path {
   }
 
   addParticle(position, velocity) {
-    let randomImage = random(particleImages);
-    this.particles.push(new Particle(position, velocity, randomImage));
+    let img = particleImages[nextImageIndex];
+    nextImageIndex = (nextImageIndex + 1) % particleImages.length;
+    this.particles.push(new Particle(position, velocity, img));
   }
 
   update() {
@@ -93,12 +98,14 @@ class Path {
   connectParticles(particleA, particleB) {
     let opacity = particleA.framesRemaining / particleFadeFrames;
     stroke(255, opacity);
+    drawingContext.setLineDash([1, 2]);
     line(
       particleA.position.x,
       particleA.position.y,
       particleB.position.x,
       particleB.position.y
     );
+    drawingContext.setLineDash([]);
   }
 
   display() {
